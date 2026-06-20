@@ -1,4 +1,5 @@
 import breeds from './breed.js';
+import { v4 } from 'uuid';
 
 export function readBreeds() {
     return breeds;
@@ -6,7 +7,7 @@ export function readBreeds() {
 
 export function addBreed(breedName) {
     const newBreed = {
-        id: breeds.length + 1,
+        id: v4(),
         name: breedName
     };
     breeds.push(newBreed);
