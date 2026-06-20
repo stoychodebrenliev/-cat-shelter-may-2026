@@ -1,6 +1,6 @@
 import http from "http";
 import fs from 'fs/promises';
-
+import cats from './cats.js';
 
 const server = http.createServer(async (req, res) => {
     
@@ -16,7 +16,7 @@ const server = http.createServer(async (req, res) => {
     let htmlContent = '';
 
     if (req.url === '/') {
-        htmlContent = await fs.readFile('./src/views/home/index.html', 'utf-8');
+        htmlContent = await renderHomePage();
     } else if (req.url === '/cats/add-breed') {
         htmlContent = await fs.readFile('./src/views/addBreed.html', 'utf-8');
     } else if (req.url === '/cats/add-cat') {
@@ -32,3 +32,24 @@ const server = http.createServer(async (req, res) => {
 server.listen(5000, () => console.log('Server is listening on port http://localhost:5000...'));
 
 
+async function renderHomePage() {
+    let htmlContent =await fs.readFile('./src/views/home/index.html', 'utf-8');
+    
+    const catTemplate =(cat) => `
+        <li>
+         <img src="${cat.imageUrl}" alt="${cat.name}">
+          <h3>${cat.name}</h3>
+          <p><span>Breed: </span>${cat.breed}</p>
+          <p><span>Description: </span>${cat.description}</p>
+          <ul class="buttons">
+              <li class="btn edit"><a href="">Change Info</a></li>
+              <li class="btn delete"><a href="">New Home</a></li>
+          </ul>
+        </li> `;
+
+        const catsContent = `<ul>${cats.map(cat => catTemplate(cat)).join('\n')}</ul>`;
+
+        const result = htmlContent.replace('{{cats}}', catsContent);
+    
+        return result;
+}
