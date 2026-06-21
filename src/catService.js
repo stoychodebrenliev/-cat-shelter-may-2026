@@ -28,7 +28,10 @@ export function editCat(catId, editedCat) {
 
     cats[catIndex] = {
         id: catId,
-        ...catData,
+        name: editedCat.name,
+        description: editedCat.description,
+        imageUrl: editedCat.imageUrl,
+        breed: editedCat.breed
     };
 
      
