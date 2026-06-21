@@ -22,3 +22,14 @@ export function addCat(cat) {
 export function getCatById(catId) {
     return cats.find(cat => cat.id === catId);
 }
+
+export function editCat(catId, editedCat) {
+    const catIndex = cats.findIndex(cat => cat.id === catId);
+
+    cats[catIndex] = {
+        id: catId,
+        ...catData,
+    };
+
+     
+}
