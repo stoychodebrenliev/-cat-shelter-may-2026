@@ -39,7 +39,7 @@ const server = http.createServer(async (req, res) => {
     } else if (req.url === '/cats/add-breed') {
         htmlContent = await fs.readFile('./src/views/addBreed.html', 'utf-8');
     } else if (req.url === '/cats/add-cat') {
-        htmlContent = await fs.readFile('./src/views/addCat.html', 'utf-8');
+        htmlContent = await renderAddCatPage();
     }
 
     
@@ -71,4 +71,14 @@ async function renderHomePage() {
         const result = htmlContent.replace('{{cats}}', catsContent);
     
         return result;
+}
+
+async function renderAddCatPage() {
+    
+    const htmlContent = await fs.readFile('./src/views/addCat.html', 'utf-8');
+
+    const breedOptions = readBreeds().map(breed => `<option value="${breed.id}">${breed.name}</option>`).join('\n');
+    const result = htmlContent.replace('{{breedOptions}}', breedOptions);
+
+    return result;
 }
