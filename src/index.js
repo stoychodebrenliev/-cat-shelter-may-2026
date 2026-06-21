@@ -50,6 +50,10 @@ const server = http.createServer(async (req, res) => {
         htmlContent = await fs.readFile('./src/views/addBreed.html', 'utf-8');
     } else if (req.url === '/cats/add-cat') {
         htmlContent = await renderAddCatPage();
+    } else if (req.url.startsWith('/cats/edit-cat/')) {
+        htmlContent = await renderEditCatPage();
+    } else {
+        htmlContent = await fs.readFile('./src/views/404.html', 'utf-8');
     }
 
     
@@ -71,7 +75,7 @@ async function renderHomePage() {
           <p><span>Breed: </span>${cat.breed}</p>
           <p><span>Description: </span>${cat.description}</p>
           <ul class="buttons">
-              <li class="btn edit"><a href="">Change Info</a></li>
+              <li class="btn edit"><a href="/cats/edit-cat/${cat.id}">Change Info</a></li>
               <li class="btn delete"><a href="">New Home</a></li>
           </ul>
         </li> `;
@@ -92,6 +96,12 @@ async function renderAddCatPage() {
     const result = htmlContent.replace('{{breedOptions}}', breedOptions);
 
     return result;
+}
+
+async function renderEditCatPage(catId) {
+    const htmlContent = await fs.readFile('./src/views/editCat.html', 'utf-8');
+
+    return htmlContent;
 }
 
 function readBodyFormData(req) {
