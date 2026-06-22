@@ -1,7 +1,7 @@
 import http from "http";
 import fs from 'fs/promises';
 import { addCat, readCats, getCatById, editCat } from './catService.js';
-import { addBreed, readBreeds } from './breedService.js';
+import { addBreed, getBreedById, readBreeds, getBreedByName } from './breedService.js';
 
 
 const server = http.createServer(async (req, res) => {
@@ -70,7 +70,10 @@ const server = http.createServer(async (req, res) => {
     } else if (req.url.startsWith('/cats/edit-cat/')) {
         const catId = req.url.split('/').pop();
         htmlContent = await renderEditCatPage(catId);
-    } else {
+    } else if (req.url.startsWith('/cats/new-home/')) {
+        const catId = req.url.split('/').pop();
+        htmlContent = await renderNewFoundPage(catId);
+    } else{
         htmlContent = await renderNotFoundPage();
     }
 
@@ -94,7 +97,7 @@ async function renderHomePage() {
           <p><span>Description: </span>${cat.description}</p>
           <ul class="buttons">
               <li class="btn edit"><a href="/cats/edit-cat/${cat.id}">Change Info</a></li>
-              <li class="btn delete"><a href="">New Home</a></li>
+              <li class="btn delete"><a href="/cats/new-home/${cat.id}">New Home</a></li>
           </ul>
         </li> `;
 
@@ -135,6 +138,25 @@ function renderBreedOptions(selectedBreed) {
     return breeds
         .map(breed => `<option value="${breed.name}" ${breed.name === selectedBreed ? ' selected' : ''}>${breed.name}</option>`)
         .join('\n');
+}
+
+async function renderNewFoundPage(catId) {
+    const cat = getCatById(catId);
+    const breed = getBreedById(cat.breed);
+
+    if(!cat) {
+        return renderNotFoundPage();
+    }
+
+    const htmlContent = await fs.readFile('./src/views/catShelter.html', 'utf-8');
+
+    const result = htmlContent.replaceAll('{{name}}', cat.name)
+        .replace('{{description}}', cat.description)
+        .replace('{{imageUrl}}', cat.imageUrl)
+        .replace('{{breedId}}', cat.breed.id)
+        .replace('{{breedName}}', cat.breed.name);
+
+    return result;
 }
 
 async function renderNotFoundPage() {
