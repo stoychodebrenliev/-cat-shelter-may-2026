@@ -71,6 +71,10 @@ const server = http.createServer(async (req, res) => {
 
     if (req.url === '/') {
         htmlContent = await renderHomePage();
+    } else if (req.url.startsWith('/search')) {
+        const urlParams = new URLSearchParams(req.url.split('?')[1]);
+        const text = urlParams.get('text');
+        htmlContent = await renderHomePage({ name: text });
     } else if (req.url === '/cats/add-breed') {
         htmlContent = await fs.readFile('./src/views/addBreed.html', 'utf-8');
     } else if (req.url === '/cats/add-cat') {
@@ -94,7 +98,7 @@ const server = http.createServer(async (req, res) => {
 
 
 
-async function renderHomePage() {
+async function renderHomePage(filter = {}) {
     let htmlContent =await fs.readFile('./src/views/home/index.html', 'utf-8');
     
     const catTemplate =(cat) => `
@@ -109,7 +113,8 @@ async function renderHomePage() {
           </ul>
         </li> `;
 
-        const cats = readCats();
+        const cats = readCats(filter);
+            
         const catsContent = `<ul>${cats.map(cat => catTemplate(cat)).join('\n')}</ul>`;
 
         const result = htmlContent.replace('{{cats}}', catsContent);
@@ -161,8 +166,8 @@ async function renderNewFoundPage(catId) {
     const result = htmlContent.replaceAll('{{name}}', cat.name)
         .replace('{{description}}', cat.description)
         .replace('{{imageUrl}}', cat.imageUrl)
-        .replace('{{breedId}}', cat.breed.id)
-        .replace('{{breedName}}', cat.breed.name);
+        .replace('{{breedId}}', cat.breed)
+        .replace('{{breedName}}', cat.breed);
 
     return result;
 }
