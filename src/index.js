@@ -1,6 +1,6 @@
 import http from "http";
 import fs from 'fs/promises';
-import { addCat, readCats, getCatById, editCat } from './catService.js';
+import { addCat, readCats, getCatById, editCat, deleteCat } from './catService.js';
 import { addBreed, getBreedById, readBreeds, getBreedByName } from './breedService.js';
 
 
@@ -46,6 +46,14 @@ const server = http.createServer(async (req, res) => {
             imageUrl: editedCat.get('imageUrl'),
             breed: editedCat.get('breed')
         });
+        return res.writeHead(302, { 'Location': '/' }).end();
+    }
+
+    if(req.method === 'POST' && req.url.startsWith('/cats/new-home/')) {
+        const catId = req.url.split('/').pop();
+        
+        deleteCat(catId);
+
         return res.writeHead(302, { 'Location': '/' }).end();
     }
 

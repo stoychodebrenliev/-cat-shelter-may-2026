@@ -36,3 +36,11 @@ export function editCat(catId, editedCat) {
 
      
 }
+
+export function deleteCat(catId) {
+    const catIndex = cats.findIndex(cat => cat.id === catId);
+    
+    if (catIndex !== -1) {
+        cats.splice(catIndex, 1);
+    }
+}
